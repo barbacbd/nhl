@@ -5,10 +5,12 @@ from os.path import exists, isdir
 from datetime import datetime
 from requests import get
 from json import dumps
+from json.decoder import JSONDecodeError
 
 
 NHL_FIRST_SEASON = 1917
 MAX_GAME_NUMBER = 1312  # Number of teams * 41 home games
+OUTPUT_DIR = "nhl_data"
 
 
 class Season(Enum):
@@ -71,22 +73,29 @@ def main():
         print(e)
         raise
 
+    if not exists(OUTPUT_DIR):
+        mkdir(OUTPUT_DIR)
+    
     # create all of the json files by pulling the requests from
     # the nhl database
     for year in years:
-        if not exists(str(year)):
-            mkdir(str(year))
+        _dir = "{}/{}".format(OUTPUT_DIR, year)
+        if not exists(_dir):
+            mkdir(_dir)
         else:
-            if not isdir(str(year)):
-                mkdir(str(year))
+            if not isdir(_dir):
+                mkdir(_dir)
             
         for i in range(MAX_GAME_NUMBER):
-            json_request = get(_create_url(year, season_type, i)).json()
+            try:
+                json_request = get(_create_url(year, season_type, i)).json()
+            except JSONDecodeError as e:
+                break
 
             if "message" in json_request and json_request["message"] == "Game data couldn't be found":
                 continue
             
-            with open("{}/{}_{}.json".format(year, year, i), "w+") as f:
+            with open("{}/{}_{}.json".format(_dir, year, i), "w+") as f:
                 f.write(dumps(json_request, indent=4))
 
 
