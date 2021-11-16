@@ -1,6 +1,7 @@
 from json import loads
 import argparse
 from nhl.team import Team
+from nhl.player import Player
 
 
 def main():
@@ -43,15 +44,28 @@ def main():
         with open(file, 'r') as json_file:
             json_data = loads(json_file.read())
 
+        teams = {}
+        players = {}
+
         if json_data:
             if "gameData" in json_data:
                 if "teams" in json_data["gameData"]:
-                    print(json_data["gameData"]["teams"]["home"])
-                    print(json_data["gameData"]["teams"]["away"])
-
-                    t = Team()
-                    t.json = json_data["gameData"]["teams"]["home"]
-                    print(str(t))
+                
+                    teams["home"] = Team()
+                    teams["home"].from_json(json_data["gameData"]["teams"]["home"])
+                    
+                    teams["away"] = Team()
+                    teams["away"].from_json(json_data["gameData"]["teams"]["away"])
+                
+                if "players" in json_data["gameData"]:
+                    for player_id, player_data in json_data["gameData"]["players"].items():
+                        players[player_id] = Player()
+                        players[player_id].from_json(player_data)
+        
+        for player_id, player_data in players.items():
+            print(str(player_data))
+                
+                
         
 
         break  # remove this

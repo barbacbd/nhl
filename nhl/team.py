@@ -8,15 +8,17 @@ class Venue(NHLBase):
     """
 
     class TimeZone(NHLBase):
-        id = None
         offset = None
         cz = None
 
-    id = None
-    name = None
-    link = None
     city = None
     timeZone = TimeZone()
+
+
+class Franchise(NHLBase):
+
+    franchiseId = None
+    teamName = None
 
 
 class Team(NHLBase):
@@ -35,9 +37,9 @@ class Team(NHLBase):
     teamName = None
     locationName = None
     firstYearOfPlay = 1917  # first year of stanley cup
-    #division = Division()
-    #conference = Conference()
-    #franchise = Franchise()
+    division = NHLBase()
+    conference = NHLBase()
+    franchise = Franchise()
     shortName = None
     officialSiteUrl = None
     franchiseId = None
