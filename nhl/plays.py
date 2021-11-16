@@ -50,4 +50,10 @@ class Play(NHLBase):
     team = None
     
     
+    def from_json(self, data):
+        pass
+
+
+    
+    
     

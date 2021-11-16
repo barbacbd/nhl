@@ -1,8 +1,6 @@
 from .base import NHLBase
 from .team import Team
 
-from json import dumps
-
 
 class Position(NHLBase):
 
