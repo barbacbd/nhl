@@ -32,11 +32,11 @@ class NHLBase:
         for k, v in data.items():
             if hasattr(self, k):
                 if hasattr(getattr(self, k), "from_json"):
-                    print(f"{self.__class__.__name__}, setting {k} to {v}")
+                    #print(f"{self.__class__.__name__}, setting {k} to {v}")
                     attr = getattr(self, k)
                     attr.from_json(v)
                 else:
-                    print(f"{self.__class__.__name__}, setting {k} to {v}")
+                    #print(f"{self.__class__.__name__}, setting {k} to {v}")
                     setattr(self, k, v)
     
     def __str__(self, *args, **kwargs):

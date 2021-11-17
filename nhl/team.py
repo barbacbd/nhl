@@ -24,12 +24,9 @@ class Franchise(NHLBase):
 class Team(NHLBase):
 
     """
-    Class to describe the nhl team
+    Class to describe an NHL team. 
     """
 
-    id = None
-    name = None
-    link = None
     venue = Venue()
 
     abbreviation = None
