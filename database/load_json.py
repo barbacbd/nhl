@@ -75,12 +75,9 @@ def main():
                             plays.append(p)
         
         for play in plays:
-            print(str(play))
+            pass #print(str(play))
         
                 
-                
-        
-
         break  # remove this
     
 

@@ -70,18 +70,30 @@ class Player(NHLBase):
     lastName = None
     primaryNumber = None
     birthDate = None
-    currentAge = 0
+    currentAge = None
     birthCity = None
     birthCountry = None
     nationality = None
     height = None
     weight = None
-    active = False
-    alternativeCaptain = False
-    captain = False
-    rookie = False
+    active = None
+    alternativeCaptain = None
+    captain = None
+    rookie = None
     shootsCatches = None
     rosterStatus = None
-    currentTeam = Team()
-    primaryPosition = Position()
+    currentTeam = None
+    primaryPosition = None
     stats = None
+
+
+    def from_json(self, data):
+
+        if "currentTeam" in data:
+            self.currentTeam = Team(data["currentTeam"])
+        
+        if "primaryPosition" in data:
+            self.primaryPosition = Player.Position(data["primaryPosition"])
+
+        # allow the parent to handle the rest
+        super().from_json(data)

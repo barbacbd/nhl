@@ -12,7 +12,14 @@ class Venue(NHLBase):
         cz = None
 
     city = None
-    timeZone = TimeZone()
+    timeZone = None
+
+    def from_json(self, data):
+
+        if "timeZone" in data:
+            self.timeZone = Venue.TimeZone(data["timeZone"])
+
+        super().from_json(data)
 
 
 class Franchise(NHLBase):
@@ -33,11 +40,27 @@ class Team(NHLBase):
     triCode = None
     teamName = None
     locationName = None
-    firstYearOfPlay = 1917  # first year of stanley cup
-    division = NHLBase()
-    conference = NHLBase()
-    franchise = Franchise()
+    firstYearOfPlay = None
+    division = None
+    conference = None
+    franchise = None
     shortName = None
     officialSiteUrl = None
     franchiseId = None
-    active = False
+    active = None
+
+    def from_json(self, data):
+        
+        if "venue" in data:
+            self.venue = Venue(data["venue"])
+        
+        if "division" in data:
+            self.division = NHLBase(data["division"])
+        
+        if "conference" in data:
+            self.conference = NHLBase(data["conference"])
+        
+        if "franchise" in data:
+            self.franchise = Franchise(data["franchise"])
+        
+        super().from_json(data)

@@ -13,27 +13,34 @@ class Result(NHLBase):
 
 class Goals(NHLBase):
     
-    away = 0
-    home = 0
+    away = None
+    home = None
 
 
 class PlayMetadata(NHLBase):
     
-    eventIdx = 0
-    eventId = 0		
-    period = 0
+    eventIdx = None
+    eventId = None	
+    period = None
     periodType = None
     ordinalNum = None
     periodTime = None
     periodTimeRemaining = None
     dateTime = None
-    goals = Goals()
+    goals = None
+
+    def from_json(self, data):
+
+        if "goals" in data:
+            self.goals = Goals(data["goals"])
+        
+        super().from_json(data)
 
 
 class Coordinates(NHLBase):
 
-    x = 0.0
-    y = 0.0    
+    x = None
+    y = None
 
 
 class EventPlayer(NHLBase):
@@ -43,12 +50,12 @@ class EventPlayer(NHLBase):
     
     def from_json(self, data):
         
+        print(f"Player Data {data}")
+
         if "player" in data:
-            self.player = Player()
-            self.player.from_json(data["player"])
+            self.player = Player(data["player"])
         
-        if "playerType" in data:
-            self.playerTyper = data["playerType"]
+        super().from_json(data)
 
 
 class Play(NHLBase):
@@ -73,25 +80,19 @@ class Play(NHLBase):
         
         if "players" in data:
             for player_data in data["players"]:
-                p = EventPlayer()
-                p.from_json(player_data)
-                self.players.append(p)
+                self.players.append(EventPlayer(player_data))
         
         if "result" in data:
-            self.result = Result()
-            self.result.from_json(data["result"])
+            self.result = Result(data["result"])
         
         if "about" in data:
-            self.about = PlayMetadata()
-            self.about.from_json(data["about"])
+            self.about = PlayMetadata(data["about"])
         
         if "coordinates" in data:
-            self.coordinates = Coordinates()
-            self.coordinates.from_json(data["coordinates"])
+            self.coordinates = Coordinates(data["coordinates"])
         
         if "team" in data:
-            self.team = Team()
-            self.team.from_json(data["team"])
+            self.team = Team(data["team"])
 
 
 class PlayTypeTracker:
