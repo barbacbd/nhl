@@ -21,17 +21,17 @@ class NHLBase:
 
             attr = getattr(self, attr_name)
 
+            # only add the variables that have specifically been set for these
+            # datatypes not the builtins or functions
             if not attr_name.startswith("_") and not callable(attr):
                 if attr is not None:
 
+                    # handle lists of other json objects and regular types
                     if isinstance(attr, list):
-                        print(f"{attr_name} is a list")
-                        print(f" here it is {attr}")
-                        json_dir[attr_name] = []
-                        
+                        json_dir[attr_name] = []                        
                         for a in attr:
                             if hasattr(a, "to_json"):
-                                json_dir.append(a.to_json())
+                                json_dir[attr_name].append(a.to_json())
                             else:
                                 json_dir.append(a)
                     else:

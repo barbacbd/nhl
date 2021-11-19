@@ -52,30 +52,19 @@ def main():
         if json_data:
             if "gameData" in json_data:
                 if "teams" in json_data["gameData"]:
-                
-                    teams["home"] = Team()
-                    teams["home"].from_json(json_data["gameData"]["teams"]["home"])
-                    
-                    teams["away"] = Team()
-                    teams["away"].from_json(json_data["gameData"]["teams"]["away"])
+                    teams["home"] = Team(json_data["gameData"]["teams"]["home"])
+                    teams["away"] = Team(json_data["gameData"]["teams"]["away"])
                 
                 if "players" in json_data["gameData"]:
                     for player_id, player_data in json_data["gameData"]["players"].items():
-                        players[player_id] = Player()
-                        players[player_id].from_json(player_data)
+                        players[player_id] = Player(player_data)
+
             if "liveData" in json_data:
-                print("found liveData")
                 if "plays" in json_data["liveData"]:
-                    print("plays")
                     if "allPlays" in json_data["liveData"]["plays"]:
-                        print("all plays")
                         for play in json_data["liveData"]["plays"]["allPlays"]:
-                            p = Play()
-                            p.from_json(play)
-                            plays.append(p)
+                            plays.append(Play(play))
         
-        for play in plays:
-            pass #print(str(play))
         
                 
         break  # remove this

@@ -13,12 +13,24 @@ class Result(NHLBase):
 
 class Goals(NHLBase):
     
+    """
+    Goals is a simple object that only represents the 
+    number of goals that the home and away team have at
+    any moment.
+    """
+
     away = None
     home = None
 
 
 class PlayMetadata(NHLBase):
     
+    """
+    The play metadata is the section `about` in the document.
+    The metadata contains all descriptive information about the
+    play in reference to the entire game being played.
+    """
+
     eventIdx = None
     eventId = None	
     period = None
@@ -39,19 +51,29 @@ class PlayMetadata(NHLBase):
 
 class Coordinates(NHLBase):
 
+    """
+    The rink is roughly 200 ft by 85 ft for the nhl 
+    standard rink (international rink sizes are slightly larger).
+    The center is 0,0 and like the coordinate plane there exists
+    a negative and positive x and y space.
+    """
+
     x = None
     y = None
 
 
 class EventPlayer(NHLBase):
     
+    """
+    An Event Player is an extension or a container around a player. It
+    includes the player type in reference to the event. 
+    Exmaple `playerTypes` may include `hitter`, `hittee`, etc.
+    """
+
     player = None
     playerType = None
     
-    def from_json(self, data):
-        
-        print(f"Player Data {data}")
-
+    def from_json(self, data):        
         if "player" in data:
             self.player = Player(data["player"])
         
@@ -67,7 +89,7 @@ class Play(NHLBase):
     the team involved.
     """
 
-    players = []  # list of EventPlayers
+    players = None
     result = None
     about = None
     coordinates = None
@@ -75,10 +97,8 @@ class Play(NHLBase):
     
     
     def from_json(self, data):
-        # empty the current list of players
-        self.players.clear()
-        
         if "players" in data:
+            self.players = []
             for player_data in data["players"]:
                 self.players.append(EventPlayer(player_data))
         
@@ -93,7 +113,6 @@ class Play(NHLBase):
         
         if "team" in data:
             self.team = Team(data["team"])
-
 
 class PlayTypeTracker:
 

@@ -34,8 +34,7 @@ class Team(NHLBase):
     Class to describe an NHL team. 
     """
 
-    venue = Venue()
-
+    venue = None
     abbreviation = None
     triCode = None
     teamName = None
