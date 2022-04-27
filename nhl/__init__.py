@@ -10,15 +10,21 @@ class NHLBase:
     
     def __init__(self, data=None):
         self.hints = {}
+        self.register()
 
-    def register(self, class_type):
+    def register(self):
         """
         Register the class variables and their respective types.
         This function should be called after __init__ has finished for the
         base class AND all variables that should be registered are created
         in the child class.
         """
-        self.hints = get_type_hints(class_type)
+        if self.__class__.__name__ != NHLBase.__name__:
+            print(self.__class__.__name__)
+            print(get_type_hints(self.__class__))
+            self.hints.update(get_type_hints(self.__class__))
+        else:
+            print("ERROR")
         
     @property
     def json(self):
@@ -28,10 +34,13 @@ class NHLBase:
             dict: json dictionary filled with all non-none type values
         """
         data = {}
-        for var in vars(self):
+        for var in self.hints:
+            print(var)
             item = getattr(self, var, None)
             if item is not None:
                 data[var] = item
+
+        print(data)
 
         return data
         
@@ -42,9 +51,14 @@ class NHLBase:
         Args:
             data (dict): Json Dictionary object to be parsed into the instance variables
         """
+        print(data)
         for k, v in data.items():
-            if hasattr(self, k):
-                setattr(self, k, v)
+            print(k)
+            if k in self.hints:
+                #if hints is a basic type cast it here, otherwise figure it out
+                print(self.hints[k])
+                print(v)
+                # setattr(self, k, self.hints[k](v))
 
     def __str__(self):
         """Base string override that formats the data as json with clean indentation.
@@ -67,25 +81,24 @@ class Metadata(NHLBase):
       - link
     
     """
+    copyright:str = None
+    gamePk:str = None
+    link:str = None
+    
+    # contained in the metadata json object, could be extra fields in future
+    wait:str = None
+    timeStamp:str = None
 
     def __init__(self):
         super().__init__()
-        self.copyright:str = None
-        self.gamePk:str = None
-        self.link:str = None
-        
-        # contained in the metadata json object, could be extra fields in future
-        self.wait:str = None
-        self.timeStamp:str = None
-
-        self.register()
 
     @property
     def json(self):
         meta= {"wait": self.wait, "timeStamp": self.timeStamp}
 
         data = {}
-        for var in set(vars(self)).difference(set(list(meta.keys()))):
+        for var in set(vars(self)).difference(set(list(meta.keys()) + ['hints'])):
+            print(var)
             item = getattr(self, var, None)
 
             if item is not None:
@@ -95,6 +108,7 @@ class Metadata(NHLBase):
             if v is None:
                 meta.pop(k)
 
+        print(data)
         if meta:
             data["metaData"] = meta
 
@@ -129,16 +143,13 @@ class Game:
 
     """
 
+    pk:str = None
+    season: str = None
+    type: str = None
+
     def __init__(self):
         super().__init__()
-        
-        # NOTE: this may be int ...
-        self.pk:str = None
-        self.season: str = None
-        self.type: str = None
-
-        self.register()
-        
+                
 
 class DateTime:
 
@@ -146,11 +157,11 @@ class DateTime:
 
     """
 
+    dateTime: str = None
+    endDateTime: str = None
+
     def __init__(self):
         super().__init__()
-        self.dateTime: str = None
-        self.endDateTime: str = None
-        self.register()
 
     @property
     def time(self):
@@ -162,15 +173,19 @@ class DateTime:
     
 
 class Status:
+
+    """
+    
+    """
+    
+    abstractGameState:str = None
+    codedGameState:str = None
+    detailedState:str = None
+    statusCode:str = None
+    startTimeTBD:bool = False
     
     def __init__(self):    
         super().__init__()
-        self.abstractGameState:str = None
-        self.codedGameState:str = None
-        self.detailedState:str = None
-        self.statusCode:str = None
-        self.startTimeTBD:bool = False
-        self.register()
         
 
 def create_from_file(filename):
@@ -217,3 +232,15 @@ def load_metadata(contents):
         meta.json = contents["metaData"]
         
     return meta
+
+
+with open("../database/nhl_data/2021/2021_1.json", "r") as f:
+    jd = loads(f.read())
+
+
+x = Metadata()
+# print(jd["metaData"])
+x.json = jd
+x.json = jd["metaData"]
+
+print(str(x))
