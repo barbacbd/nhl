@@ -2,7 +2,7 @@ from unittest import main, TestCase
 from nhl import *
 from json import dumps
 from os import remove
-from os.path import exists
+from os.path import exists, dirname, abspath
 
 
 class NHLTest(TestCase):
@@ -11,7 +11,7 @@ class NHLTest(TestCase):
     
     @classmethod
     def setUpClass(cls):
-        cls.goodData = ParseFromFile("GoodNHLData.json")
+        cls.goodData = ParseFromFile(dirname(abspath(__file__)) + "/GoodNHLData.json")
 
     def test_01_valid_init(self):
         """Read in a valid file and ensure the contents are good

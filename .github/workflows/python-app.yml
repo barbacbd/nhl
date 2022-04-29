@@ -30,7 +30,7 @@ jobs:
           python -m pip install -r pytest pytest-cov coverage
       - name: Tests
         run: |
-          pytest --cov=tests
+          python -m pytest tests/test_nhl.py
   tests-windows:
     runs-on: ${{ matrix.os }}
     name: ${{matrix.os}}-${{matrix.python-version}}
@@ -53,7 +53,7 @@ jobs:
           python -m pip install -r pytest pytest-cov coverage
       - name: Tests
         run: |
-          pytest --cov=tests
+          python -m pytest tests/test_nhl.py
   tests-macos:
     runs-on: ${{ matrix.os }}
     name: ${{matrix.os}}-${{matrix.python-version}}
@@ -76,4 +76,4 @@ jobs:
           python -m pip install -r pytest pytest-cov coverage
       - name: Tests
         run: |
-          pytest --cov=tests
+          python -m pytest tests/test_nhl.py
