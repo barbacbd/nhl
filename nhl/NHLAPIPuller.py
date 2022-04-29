@@ -68,7 +68,7 @@ def main():
 
     try:
         season_type = [x for x in Season if x.name == args.season][0].value
-    except (IndexValue, TypeError) as e:
+    except (IndexError, TypeError) as e:
         print(e)
         raise
     

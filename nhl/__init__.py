@@ -1,246 +1,191 @@
 from json import dumps, loads
 from typing import get_type_hints
+from logging import getLogger
+from os.path import exists
 
 
-class NHLBase:
+log = getLogger()
+
+
+class NHLData:
     
-    """
-    Base class for the NHL classes. 
-    """
+    def __init__(self, data):
+        self.__children = set()
+        self.__keys = {}
+        
+        self.load(data)
     
-    def __init__(self, data=None):
-        self.hints = {}
-        self.register()
-
-    def register(self):
-        """
-        Register the class variables and their respective types.
-        This function should be called after __init__ has finished for the
-        base class AND all variables that should be registered are created
-        in the child class.
-        """
-        if self.__class__.__name__ != NHLBase.__name__:
-            print(self.__class__.__name__)
-            print(get_type_hints(self.__class__))
-            self.hints.update(get_type_hints(self.__class__))
-        else:
-            print("ERROR")
-        
-    @property
-    def json(self):
-        """Json or dictionary property
-
-        Returns:
-            dict: json dictionary filled with all non-none type values
-        """
-        data = {}
-        for var in self.hints:
-            print(var)
-            item = getattr(self, var, None)
-            if item is not None:
-                data[var] = item
-
-        print(data)
-
-        return data
-        
-    @json.setter
-    def json(self, data):
-        """_summary_
+    def load(self, data):
+        """Load the data from a dictionary
 
         Args:
-            data (dict): Json Dictionary object to be parsed into the instance variables
-        """
-        print(data)
-        for k, v in data.items():
-            print(k)
-            if k in self.hints:
-                #if hints is a basic type cast it here, otherwise figure it out
-                print(self.hints[k])
-                print(v)
-                # setattr(self, k, self.hints[k](v))
+            data (dict): Json formatted dictionary
 
-    def __str__(self):
-        """Base string override that formats the data as json with clean indentation.
+        """
+        if not isinstance(data, dict):
+            log.error("data was not a dictionary")
+        else:
+            for k, v in data.items():
+                self.__children.add(k.lower())
+                self.__keys[k.lower()] = k
+                # Add the children to this node in the structure
+                if isinstance(v, dict):
+                    setattr(self, k, NHLData(v))
+                else:
+                    setattr(self, k, v)
+    
+    def query(self, qdata):
+        """Search the NHL Data tree by looking at the children to find the value associated with
+        the output. The output with be a simple type OR NHLData object
+
+        Example:
+            data = query(['this', 'is', 'a', 'test'])
+            data would contain whatever information was stored at 
+            ```
+            {
+                "this": {
+                    "is": {
+                        "a": {
+                            "test" : {
+                                
+                            }
+                        }
+                    }
+                }
+            }
+            ```
+
+        Args:
+            qdata (str, list(str)): A string seperated by `.` or a list of ordered words.
 
         Returns:
-            str: Formatted json with 4 space indentation
+            simple (json serializable type) or NHLData: When found return the found data
+        """
+        if isinstance(qdata, str):
+            qdataCopy = qdata.split(".")
+        elif isinstance(qdata, list):
+            qdataCopy = qdata.copy()
+        else:
+            log.error("Suggested format is a list of string or a string delimited by periods.")
+            return None
+
+        # child is the first element in the list
+        child = qdataCopy.pop(0)
+
+        if child.lower() in self.__children:
+            realName = self.__keys[child.lower()]
+            
+            if len(qdataCopy) > 0:
+                return getattr(self, realName).query(qdataCopy)
+            else:
+                return getattr(self, realName)
+        else:
+            log.error("Failed to find {} in children.".format(child))
+            return None
+    
+    @property
+    def children(self):
+        """Interface to get all children of this instance
+
+        Returns:
+            list: List of all children
+        """
+        return list(self.__keys.values())
+    
+    @property
+    def json(self):
+        """Json property that provides the data stored in this instance as
+        a json formatted dictionary
+        """
+        d = {}
+        for var in vars(self):
+            if not var.startswith("_") and not callable(getattr(self, var)):
+                
+                val = getattr(self, var)
+                if val is not None:
+                    if isinstance(val, NHLData):
+                        d[var] = val.json
+                    else:
+                        d[var] = val
+
+        return d
+    
+    def tree(self, indent=0):
+        """Provide the Tree report that contains the children
+        formatted for the user to see. This is not the same as the
+        json data, as no values are provided.
+        
+        Example Output:
+        ```
+        example
+          |
+          -- child_1
+          -- child_2
+            |
+            -- grandchild_1
+        example_2
+          |
+          -- child_1
+        ```
+        
+        Returns:
+            str: A simple tree structure that indicates parents and children
+        
+        """
+        treeStr = ""
+        treeDent = "  " * (indent-1)
+        if indent > 1:
+            treeDent += "--"
+        
+        childInd = "  " * (indent) + "|"
+        for alias in self.__children:
+            child = self.__keys[alias]
+            treeStr += "{}{}\n".format(treeDent, child)
+            
+            if isinstance(getattr(self, child), NHLData):
+                treeStr += childInd + "\n"
+                treeStr += getattr(self, child).tree(indent+1)
+            
+        return treeStr            
+    
+    def __str__(self):
+        """String override
+
+        Returns:
+            str: Json String representation
         """
         return dumps(self.json, indent=4)
 
 
-
-class Metadata(NHLBase):
-
-    """
-    The metadata is included for every game. This class includes 
-    other variables that are NOT contained in any other json object, but
-    could be considered metadata about the game including:
-      - copyright
-      - gamePk
-      - link
-    
-    """
-    copyright:str = None
-    gamePk:str = None
-    link:str = None
-    
-    # contained in the metadata json object, could be extra fields in future
-    wait:str = None
-    timeStamp:str = None
-
-    def __init__(self):
-        super().__init__()
-
-    @property
-    def json(self):
-        meta= {"wait": self.wait, "timeStamp": self.timeStamp}
-
-        data = {}
-        for var in set(vars(self)).difference(set(list(meta.keys()) + ['hints'])):
-            print(var)
-            item = getattr(self, var, None)
-
-            if item is not None:
-                data[var] = item
-
-        for k, v in meta.copy().items():
-            if v is None:
-                meta.pop(k)
-
-        print(data)
-        if meta:
-            data["metaData"] = meta
-
-        return data
-        
-    @json.setter
-    def json(self, data):
-        for k, v in data.items():
-            if hasattr(self, k):
-                setattr(self, k, v)
-
-
-class GameData:
-
-    """
-
-    """
-
-    def __init__(self):
-
-        self.game = None
-        self.datetime = None
-        self.status = None
-        self.teams = None
-        self.players = None
-        self.venue = None
-
-
-class Game:
-
-    """
-
-    """
-
-    pk:str = None
-    season: str = None
-    type: str = None
-
-    def __init__(self):
-        super().__init__()
-                
-
-class DateTime:
-
-    """
-
-    """
-
-    dateTime: str = None
-    endDateTime: str = None
-
-    def __init__(self):
-        super().__init__()
-
-    @property
-    def time(self):
-        return None
-
-    @property
-    def endTime(self):
-        return None
-    
-
-class Status:
-
-    """
-    
-    """
-    
-    abstractGameState:str = None
-    codedGameState:str = None
-    detailedState:str = None
-    statusCode:str = None
-    startTimeTBD:bool = False
-    
-    def __init__(self):    
-        super().__init__()
-        
-
-def create_from_file(filename):
-    """_summary_
+def ParseFromContents(data):
+    """Create a base NHLData object that will hold everything in the 
+    dictionary
 
     Args:
-        filename (_type_): _description_
+        data (dict): Parse the contents of the data.
+    
+    Returns:
+        NHLData object. In the event of bad data, the object will be empty but the
+        shell of an NHLData Object will remain
     """
-    if not filename.endswith(".json"):
-        # log error
-        return None
+    return NHLData(data)
 
-    with open(filename, "r") as f:
-        json_data = loads(f.read())
-    
-    return create_from_json(json_data)
-    
-    
-def create_from_json(contents):
-    """_summary_
+
+def ParseFromFile(filename):
+    """Parse the contents of the File
 
     Args:
-        contents (_type_): _description_
-    """
-    if not isinstance(contents, dict):
-        # log error
-        return None
+        filename (str): full path to the file containing json data
     
-    meta = load_metadata(contents)
-    
-    # return info here
-    return None
-
-
-def load_metadata(contents):
-    """_summary_
-
-    Args:
-        contents (_type_): _description_
-    """
-    meta = Metadata()
-    meta.json = contents
-    if "metaData" in contents:
-        meta.json = contents["metaData"]
+    Returns:
+        NHLData object when successful, otherwise None.
         
-    return meta
+    Note: A successful return is NOT an indicator of a full success. See `ParseFromContents` for
+    more information.
+    """
+    if filename.endswith(".json") and exists(filename):
+        with open(filename, "r") as f:
+            jd = loads(f.read())
+        
+        return ParseFromContents(jd)
 
-
-with open("../database/nhl_data/2021/2021_1.json", "r") as f:
-    jd = loads(f.read())
-
-
-x = Metadata()
-# print(jd["metaData"])
-x.json = jd
-x.json = jd["metaData"]
-
-print(str(x))
