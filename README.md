@@ -1,4 +1,12 @@
-# NHL
+# NHL 
+
+[![Build](https://github.com/barbacbd/nhl/workflows/Build/badge.svg?branch=main&event=push)](https://github.com/barbacbd/nhl/actions/workflows/python-app.yml)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/barbacbd/nhl/pulse/commit-activity)
+[![GitHub latest commit](https://img.shields.io/github/last-commit/barbacbd/nhl)](https://github.com/barbacbd/nhl/commit/)
+
+[![Linux](https://svgshare.com/i/Zhy.svg)](https://svgshare.com/i/Zhy.svg)
+[![macOS](https://svgshare.com/i/ZjP.svg)](https://svgshare.com/i/ZjP.svg)
+[![Windows](https://svgshare.com/i/ZhY.svg)](https://svgshare.com/i/ZhY.svg)
 
 The National Hockey League (NHL) was kind enough to provide all of the historical data on a free web interface. This project was created
 to pull the data and analyze the data. The data is all loaded into python objects from the json encoded data that was pulled from the
@@ -11,6 +19,31 @@ The reader may find resources in [references](./refs). The references may includ
 information from this library.
 
 # Pulling NHL Historical Data
+
+The executable is called `NHLAPIPuller`:
+
+The following are parameters,
+
+```
+usage: Pull NHL data from the web API based on the following parameters: 
+       [-h] [-g GAMES [GAMES ...]] [-s {PRESEASON,REGULAR,PLAYOFFS,ALLSTAR}]
+       [-y YEARS [YEARS ...]] [--dir DIR]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -g GAMES [GAMES ...], --games GAMES [GAMES ...]
+                        Type game for the years that are selected.
+  -s {PRESEASON,REGULAR,PLAYOFFS,ALLSTAR}, --season {PRESEASON,REGULAR,PLAYOFFS,ALLSTAR}
+                        Type of seasonal games for which the data should be
+                        gathered.
+  -y YEARS [YEARS ...], --years YEARS [YEARS ...]
+                        The years of data that is requested.
+  --dir DIR             Output directory.
+```
+
+**Notes:**
+- _When no games are provided to the executable, all games for the valid years are pulled._
+- _When no years are provided, all years from the start of the NHL to the current year are selected._
 
 
 # Creating Python objects
