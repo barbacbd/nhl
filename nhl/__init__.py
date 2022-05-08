@@ -18,9 +18,7 @@ class NHLData:
     def load(self, data):
         """Load the data from a dictionary
 
-        Args:
-            data (dict): Json formatted dictionary
-
+        :param data: Json formatted dictionary
         """
         if not isinstance(data, dict):
             log.error("data was not a dictionary")
@@ -38,28 +36,8 @@ class NHLData:
         """Search the NHL Data tree by looking at the children to find the value associated with
         the output. The output with be a simple type OR NHLData object
 
-        Example:
-            data = query(['this', 'is', 'a', 'test'])
-            data would contain whatever information was stored at 
-            ```
-            {
-                "this": {
-                    "is": {
-                        "a": {
-                            "test" : {
-                                
-                            }
-                        }
-                    }
-                }
-            }
-            ```
-
-        Args:
-            qdata (str, list(str)): A string seperated by `.` or a list of ordered words.
-
-        Returns:
-            simple (json serializable type) or NHLData: When found return the found data
+        :param qdata: A string seperated by `.` or a list of ordered words.
+        :return: simple (json serializable type) or NHLData: When found return the found data
         """
         if isinstance(qdata, str):
             qdataCopy = qdata.split(".")
@@ -87,8 +65,7 @@ class NHLData:
     def children(self):
         """Interface to get all children of this instance
 
-        Returns:
-            list: List of all children
+        :return: List of all children
         """
         return list(self.__keys.values())
     
@@ -96,6 +73,8 @@ class NHLData:
     def json(self):
         """Json property that provides the data stored in this instance as
         a json formatted dictionary
+        
+        :return: JSON Serialized Dictionary
         """
         d = {}
         for var in vars(self):
@@ -115,22 +94,7 @@ class NHLData:
         formatted for the user to see. This is not the same as the
         json data, as no values are provided.
         
-        Example Output:
-        ```
-        example
-          |
-          -- child_1
-          -- child_2
-            |
-            -- grandchild_1
-        example_2
-          |
-          -- child_1
-        ```
-        
-        Returns:
-            str: A simple tree structure that indicates parents and children
-        
+        :return: A simple tree structure that indicates parents and children
         """
         treeStr = ""
         treeDent = "  " * (indent-1)
@@ -151,8 +115,7 @@ class NHLData:
     def __str__(self):
         """String override
 
-        Returns:
-            str: Json String representation
+        :return: Json String representation
         """
         return dumps(self.json, indent=4)
 
@@ -161,12 +124,8 @@ def ParseFromContents(data):
     """Create a base NHLData object that will hold everything in the 
     dictionary
 
-    Args:
-        data (dict): Parse the contents of the data.
-    
-    Returns:
-        NHLData object. In the event of bad data, the object will be empty but the
-        shell of an NHLData Object will remain
+    :param data: Parse the contents of the data.
+    :return: NHLData object or None on faillure.
     """
     return NHLData(data)
 
@@ -174,18 +133,11 @@ def ParseFromContents(data):
 def ParseFromFile(filename):
     """Parse the contents of the File
 
-    Args:
-        filename (str): full path to the file containing json data
-    
-    Returns:
-        NHLData object when successful, otherwise None.
-        
-    Note: A successful return is NOT an indicator of a full success. See `ParseFromContents` for
-    more information.
+    :param filename: full path to the file containing json data
+    :return: NHLData object when successful, otherwise None.
     """
     if filename.endswith(".json") and exists(filename):
         with open(filename, "r") as f:
             jd = loads(f.read())
         
         return ParseFromContents(jd)
-
