@@ -76,102 +76,6 @@
 <h1>nhl package<a class="headerlink" href="#nhl-package" title="Permalink to this headline"></a></h1>
 <section id="module-nhl">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-nhl" title="Permalink to this headline"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="nhl.NHLData">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nhl.</span></span><span class="sig-name descname"><span class="pre">NHLData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nhl.NHLData" title="Permalink to this definition"></a></dt>
-<dd><dl class="py property">
-<dt class="sig sig-object py" id="nhl.NHLData.children">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">children</span></span><a class="headerlink" href="#nhl.NHLData.children" title="Permalink to this definition"></a></dt>
-<dd><p>Interface to get all children of this instance</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>List of all children</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="nhl.NHLData.json">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">json</span></span><a class="headerlink" href="#nhl.NHLData.json" title="Permalink to this definition"></a></dt>
-<dd><p>Json property that provides the data stored in this instance as
-a json formatted dictionary</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>JSON Serialized Dictionary</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="nhl.NHLData.load">
-<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nhl.NHLData.load" title="Permalink to this definition"></a></dt>
-<dd><p>Load the data from a dictionary</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data</strong> – Json formatted dictionary</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="nhl.NHLData.query">
-<span class="sig-name descname"><span class="pre">query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qdata</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nhl.NHLData.query" title="Permalink to this definition"></a></dt>
-<dd><p>Search the NHL Data tree by looking at the children to find the value associated with
-the output. The output with be a simple type OR NHLData object</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>qdata</strong> – A string seperated by <cite>.</cite> or a list of ordered words.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>simple (json serializable type) or NHLData: When found return the found data</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="nhl.NHLData.tree">
-<span class="sig-name descname"><span class="pre">tree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nhl.NHLData.tree" title="Permalink to this definition"></a></dt>
-<dd><p>Provide the Tree report that contains the children
-formatted for the user to see. This is not the same as the
-json data, as no values are provided.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>A simple tree structure that indicates parents and children</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="nhl.ParseFromContents">
-<span class="sig-prename descclassname"><span class="pre">nhl.</span></span><span class="sig-name descname"><span class="pre">ParseFromContents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nhl.ParseFromContents" title="Permalink to this definition"></a></dt>
-<dd><p>Create a base NHLData object that will hold everything in the 
-dictionary</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data</strong> – Parse the contents of the data.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>NHLData object or None on faillure.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="nhl.ParseFromFile">
-<span class="sig-prename descclassname"><span class="pre">nhl.</span></span><span class="sig-name descname"><span class="pre">ParseFromFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nhl.ParseFromFile" title="Permalink to this definition"></a></dt>
-<dd><p>Parse the contents of the File</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>filename</strong> – full path to the file containing json data</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>NHLData object when successful, otherwise None.</p>
-</dd>
-</dl>
-</dd></dl>
-
 <span class="target" id="module-nhl.NHLAPIPuller"></span><dl class="py class">
 <dt class="sig sig-object py" id="nhl.NHLAPIPuller.Season">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nhl.NHLAPIPuller.</span></span><span class="sig-name descname"><span class="pre">Season</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nhl.NHLAPIPuller.Season" title="Permalink to this definition"></a></dt>
@@ -202,32 +106,6 @@ dictionary</p>
 <dt class="sig sig-object py" id="nhl.NHLAPIPuller.main">
 <span class="sig-prename descclassname"><span class="pre">nhl.NHLAPIPuller.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nhl.NHLAPIPuller.main" title="Permalink to this definition"></a></dt>
 <dd><p>Main entry point</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="id0">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nhl.NHLAPIPuller.</span></span><span class="sig-name descname"><span class="pre">Season</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id0" title="Permalink to this definition"></a></dt>
-<dd><p>An enumeration.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id1">
-<span class="sig-name descname"><span class="pre">ALLSTAR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#id1" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id2">
-<span class="sig-name descname"><span class="pre">PLAYOFFS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#id2" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id3">
-<span class="sig-name descname"><span class="pre">PRESEASON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#id3" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id4">
-<span class="sig-name descname"><span class="pre">REGULAR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#id4" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
