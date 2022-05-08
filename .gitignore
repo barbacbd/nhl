@@ -131,3 +131,5 @@ dmypy.json
 
 # project specific
 database/nhl_data/*
+autodoc_ext_artifacts.yaml
+.autodoc_ext_artifacts.yaml
