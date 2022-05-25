@@ -1,37 +1,13 @@
-from setuptools import setup, find_packages
-from os import path
-from json import loads
+from setuptools import setup
 
 
-this_directory = path.abspath(path.dirname(__file__))
-with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
-    long_description = f.read()
+if __name__ == '__main__':
+    '''
+    The main configuration information is located in the setup.cfg
+    file. All changes to package requirements will require a change
+    to both the setup.cfg and requirements.txt file.
 
-with open("about.json") as about:
-    jd = loads(about.read())
-    
-setup(
-    name=jd["project"],
-    version=jd["version"],
-    license='MIT',
-    long_description=long_description,
-    long_description_content_type='text/markdown',
-    packages=find_packages(),
-    python_requires='>=3.0, <4',
-    install_requires=[
-        'requests'
-    ],
-    url=jd["url"],
-    download_url='{}/archive/v_{}.tar.gz'.format(jd["url"], jd["version"].replace(".", "")),
-    description='A package to pull NHL historical data, and create the objects to hold the data.',
-    author=jd["author"],
-    author_email=jd["email"],
-    package_data={},
-    include_package_data=True,
-    zip_safe=False,
-    entry_points={
-        'console_scripts': [
-            'NHLAPIPuller=nhl.NHLAPIPuller:main'
-        ]
-    },
-)
+    Changes to test requirements will require a change to setup.cfg
+    and tests/requirements.txt.
+    '''
+    setup()
