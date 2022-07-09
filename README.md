@@ -1,12 +1,7 @@
 # NHL 
 
 [![Build](https://github.com/barbacbd/nhl/workflows/Build/badge.svg?branch=main&event=push)](https://github.com/barbacbd/nhl/actions/workflows/python-app.yml)
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/barbacbd/nhl/pulse/commit-activity)
 [![GitHub latest commit](https://img.shields.io/github/last-commit/barbacbd/nhl)](https://github.com/barbacbd/nhl/commit/)
-
-[![Linux](https://svgshare.com/i/Zhy.svg)](https://svgshare.com/i/Zhy.svg)
-[![macOS](https://svgshare.com/i/ZjP.svg)](https://svgshare.com/i/ZjP.svg)
-[![Windows](https://svgshare.com/i/ZhY.svg)](https://svgshare.com/i/ZhY.svg)
 
 The National Hockey League (NHL) was kind enough to provide all of the historical data on a free web interface. This project was created
 to pull the data and analyze the data. The data is all loaded into python objects from the json encoded data that was pulled from the
