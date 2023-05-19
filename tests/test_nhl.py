@@ -1,5 +1,6 @@
 from unittest import main, TestCase
-from nhl import *
+from nhl import NHLData
+from nhl.contents import ParseFromFile
 from json import dumps
 from os import remove
 from os.path import exists, dirname, abspath
