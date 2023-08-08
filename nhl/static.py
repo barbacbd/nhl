@@ -25,7 +25,7 @@ def create_game_endpoint(year, season_type, game):
     :return: string endpoint for a game
     '''
     return 'http://statsapi.web.nhl.com/api/v1/game/{}{}{}/feed/live'.format(
-        year, str(season_type).zfill(2), str(game).zfill(4)
+        year, str(season_type.value).zfill(2), str(game).zfill(4)
     )
 
 
