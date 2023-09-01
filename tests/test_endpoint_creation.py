@@ -1,5 +1,19 @@
 from unittest import main, TestCase
-from nhl_core.static import create_team_endpoint, API_TEAM_ENDPOINT, _TEAM_MODIFIERS
+from nhl_core.static import (
+    API_TEAM_ENDPOINT, 
+    _TEAM_MODIFIERS,
+    create_team_endpoint, 
+    API_DIVISION_ENDPOINT,
+    create_division_endpoint,
+    API_CONFERENCE_ENDPOINT,
+    create_conference_endpoint,
+    API_DRAFT_ENDPOINT,
+    create_draft_endpoint,
+    API_PROSPECTS_ENDPOINT,
+    create_prospects_endpoint,
+    API_AWARDS_ENDPOINT,
+    create_awards_endpoint,
+)
 from random import choice, randint
 from datetime import datetime
 
@@ -74,7 +88,44 @@ class EndpointTests(TestCase):
         endpoint = create_team_endpoint(modifiers={"roster": None, "badData": None})
         assert endpoint.endswith("roster")
     
+    def test_10_base_division_endpoint(self):
+        assert create_division_endpoint() == API_DIVISION_ENDPOINT
+    
+    def test_11_division_endpoint(self):
+        assert create_division_endpoint(division_id=3).endswith("3")
+    
+    def test_13_base_conference_endpoint(self):
+        assert create_conference_endpoint() == API_CONFERENCE_ENDPOINT
+    
+    def test_14_conference_endpoint(self):
+        assert create_conference_endpoint(conference_id=2).endswith("2")
+    
+    def test_15_base_draft_endpoint(self):
+        assert create_draft_endpoint() == API_DRAFT_ENDPOINT
+    
+    def test_16_draft_endpoint(self):
+        year = datetime.now().year - 1
+        assert create_draft_endpoint(year=year).endswith(str(year))
+    
+    def test_17_draft_endpoint_too_high(self):
+        year = datetime.now().year + 10
+        assert create_draft_endpoint(year=year) == API_DRAFT_ENDPOINT
 
+    def test_18_draft_endpoint_too_low(self):
+        year = 0
+        assert create_draft_endpoint(year=year) == API_DRAFT_ENDPOINT
+
+    def test_19_base_prospects_endpoint(self):
+        assert create_prospects_endpoint() == API_PROSPECTS_ENDPOINT
+    
+    def test_20_prospects_endpoint(self):
+        assert create_prospects_endpoint(2).endswith("2")
+    
+    def test_21_base_awards_endpoint(self):
+        assert create_awards_endpoint() == API_AWARDS_ENDPOINT
+    
+    def test_22_awards_endpoint(self):
+        assert create_awards_endpoint(2).endswith("2")
 
 if __name__ == '__main__':
     main()

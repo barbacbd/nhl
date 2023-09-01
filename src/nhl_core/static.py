@@ -1,4 +1,5 @@
 from enum import Enum
+from datetime import datetime
 
 
 # The first season of the NHL was 1917 but some teams played in leagues prior to the
@@ -10,8 +11,20 @@ NHL_FIRST_SEASON = 1917
 # the league or the season length changes.
 MAX_GAME_NUMBER = 1312
 
-# The endpoint provides data about all teams in the NHL
+# 
+# Base Endpoints
+#
 API_TEAM_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/teams"
+API_DIVISION_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/divisions"
+API_CONFERENCE_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/conferences"
+
+
+API_STANDINGTYPES_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/standingsTypes"
+API_STATTYPES_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/statTypes"
+API_DRAFT_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/draft"
+API_PROSPECTS_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/prospects"
+API_AWARDS_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/awards"
+
 
 _TEAM_MODIFIERS = {
     "roster": None,
@@ -22,6 +35,7 @@ _TEAM_MODIFIERS = {
     "season": str,
     "teamId": list,
 }
+
 
 def describe_team_endpoint():
     """Gather information about the team endpoint.
@@ -35,6 +49,7 @@ def describe_team_endpoint():
         "season": "eight character season information, ex: 20212022",
         "teamId": "list or string of team ids to query",
     }
+
 
 def create_team_endpoint(team_id=None, modifiers={}):
     """Create a full endpoint to retrieve NHL team data from the API. To retrieve a full
@@ -70,6 +85,56 @@ def create_team_endpoint(team_id=None, modifiers={}):
         return f"{endpoint}?{collapsed}"
 
     return endpoint
+
+
+def create_division_endpoint(division_id=None):
+    """The division endpoint can either use the base or add an ID.
+
+    :param division_id: When provided, query the api for a single division
+    :return: String for the endpoint
+    """
+    return API_DIVISION_ENDPOINT if division_id is None else f"{API_DIVISION_ENDPOINT}/{division_id}"
+
+
+def create_conference_endpoint(conference_id=None):
+    """The conference endpoint can either use the base or add an ID.
+
+    :param conference_id: When provided, query the api for a single conference
+    :return: String for the endpoint
+    """
+    return API_CONFERENCE_ENDPOINT if conference_id is None else f"{API_CONFERENCE_ENDPOINT}/{conference_id}"
+
+
+def create_draft_endpoint(year=None):
+    """The draft endpoint can either use the base or add a year. If no year
+    is added, the current draft year is used.
+
+    :param year: year of the draft
+    :return: String for the endpoint
+    """
+    if isinstance(year, int):
+        if year > NHL_FIRST_SEASON and year <= datetime.now().year:
+            return f"{API_DRAFT_ENDPOINT}/{year}"
+
+    return API_DRAFT_ENDPOINT
+
+
+def create_prospects_endpoint(prospect_id=None):
+    """The prospect endpoint can either use the base or add an ID.
+
+    :param prospect_id: When provided, query the api for a single prospect
+    :return: String for the endpoint
+    """
+    return API_PROSPECTS_ENDPOINT if prospect_id is None else f"{API_PROSPECTS_ENDPOINT}/{prospect_id}"
+
+
+def create_awards_endpoint(award_id=None):
+    """The award_id endpoint can either use the base or add an ID.
+
+    :param award_id: When provided, query the api for a single award
+    :return: String for the endpoint
+    """
+    return API_AWARDS_ENDPOINT if award_id is None else f"{API_AWARDS_ENDPOINT}/{award_id}"
 
 
 def create_game_endpoint(year, season_type, game):
