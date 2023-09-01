@@ -18,9 +18,10 @@ API_TEAM_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/teams"
 API_DIVISION_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/divisions"
 API_CONFERENCE_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/conferences"
 
-
+API_STANDINGS_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/standings"
 API_STANDINGTYPES_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/standingsTypes"
 API_STATTYPES_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/statTypes"
+_API_TEAMSTATS_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/teams/{}/stats"
 API_DRAFT_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/draft"
 API_PROSPECTS_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/prospects"
 API_AWARDS_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/awards"
@@ -36,18 +37,58 @@ _TEAM_MODIFIERS = {
     "teamId": list,
 }
 
+_STANDINGS_MODIFIERS = {
+    "season": str,
+    "date": str,
+    "record": None,
+}
+
+
+def _internal_modifier_parsing(original_endpoint, internal_modifiers, modifiers={}):
+    """Internal function to parse modifier data. Note, modifiers that do not match
+    expected types are dropped and no error is raised.
+
+    :param original_endpoint: original endpoint (see endpoints above)
+    :param internal_modifiers: dictioanry of acceptable modifiers
+    :param modifiers: dictionary of modifiers sent in by the user.
+    :return: final endpoint.
+    """
+    valid_modifiers = []
+    
+    for key, value in modifiers.items():
+        if key in internal_modifiers:
+            if internal_modifiers[key] is str and value is not None:
+                valid_modifiers.append(f"{key}={value}")
+            elif internal_modifiers[key] is list and isinstance(value, str):
+                valid_modifiers.append(f"{key}={value}")
+            elif internal_modifiers[key] is list and isinstance(value, list):
+                matched_types = [isinstance(x, str) for x in value]
+                if False in matched_types:
+                    break  # break out when a type didn't match
+                data_list = ",".join(value)
+                valid_modifiers.append(f"{key}={data_list}")
+            elif internal_modifiers[key] is None:
+                valid_modifiers.append(key)
+
+    if valid_modifiers:
+        collapsed = "&".join(valid_modifiers)
+        return f"{original_endpoint}?{collapsed}"
+
+    return original_endpoint
+
+
 
 def describe_team_endpoint():
     """Gather information about the team endpoint.
     """
     return {
-        "roster": "roster of active players for the specified team",
-        "names": "roster of active players for the specified team (less descriptive)",
-        "next": "details about the next game",
-        "previous": "details about the previous game",
-        "stats": "team stats for the season",
-        "season": "eight character season information, ex: 20212022",
-        "teamId": "list or string of team ids to query",
+        "roster": "Roster of active players for the specified team.",
+        "names": "Roster of active players for the specified team (less descriptive).",
+        "next": "Details about the next game.",
+        "previous": "Details about the previous game.",
+        "stats": "Team stats for the season.",
+        "season": "Eight character season information (ex: 20212022).",
+        "teamId": "List or string of team ids to query.",
     }
 
 
@@ -62,29 +103,29 @@ def create_team_endpoint(team_id=None, modifiers={}):
     :return: String for the endpoint
     """
     endpoint = API_TEAM_ENDPOINT if team_id is None else f"{API_TEAM_ENDPOINT}/{team_id}"
+    return _internal_modifier_parsing(endpoint, _TEAM_MODIFIERS, modifiers)
 
-    valid_modifiers = []
-    
-    for key, value in modifiers.items():
-        if key in _TEAM_MODIFIERS:
-            if _TEAM_MODIFIERS[key] is str and value is not None:
-                valid_modifiers.append(f"{key}={value}")
-            elif _TEAM_MODIFIERS[key] is list and isinstance(value, str):
-                valid_modifiers.append(f"{key}={value}")
-            elif _TEAM_MODIFIERS[key] is list and isinstance(value, list):
-                matched_types = [isinstance(x, str) for x in value]
-                if False in matched_types:
-                    break  # break out when a type didn't match
-                data_list = ",".join(value)
-                valid_modifiers.append(f"{key}={data_list}")
-            elif _TEAM_MODIFIERS[key] is None:
-                valid_modifiers.append(key)
 
-    if valid_modifiers:
-        collapsed = "&".join(valid_modifiers)
-        return f"{endpoint}?{collapsed}"
+def describe_standings_endpoint():
+    """Gather information about the standings endpoint.
+    """
+    return {
+        "season": "Standings for a specified season.",
+        "date": "Standings for a specified date (ex: 2018-01-09).",
+        "record": "Detailed information for each team.",
+    }
 
-    return endpoint
+
+def create_standings_endpoint(modifiers={}):
+    """Create a full endpoint to retrieve NHL standings data from the API. To retrieve a full
+    list of modifiers and their uses, please see describe_standings_endpoint(). Note that all
+    invalid modifiers are skipped, and do Not cause an error.
+
+    :param modifiers: Dictionary of modifiers to their values. 
+
+    :return: String for the endpoint
+    """
+    return _internal_modifier_parsing(API_STANDINGS_ENDPOINT, _STANDINGS_MODIFIERS, modifiers)
 
 
 def create_division_endpoint(division_id=None):
@@ -135,6 +176,15 @@ def create_awards_endpoint(award_id=None):
     :return: String for the endpoint
     """
     return API_AWARDS_ENDPOINT if award_id is None else f"{API_AWARDS_ENDPOINT}/{award_id}"
+
+
+def create_team_stats_endpoint(team_id):
+    """Get the current season stats and current season rankings for a specific team.
+
+    :param team_id: ID of the team to retrieve information about
+    :return: String for the endpoint
+    """
+    return _API_TEAMSTATS_ENDPOINT.format(team_id)
 
 
 def create_game_endpoint(year, season_type, game):

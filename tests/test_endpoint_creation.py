@@ -13,6 +13,9 @@ from nhl_core.static import (
     create_prospects_endpoint,
     API_AWARDS_ENDPOINT,
     create_awards_endpoint,
+    _STANDINGS_MODIFIERS,
+    API_STANDINGS_ENDPOINT,
+    create_standings_endpoint,
 )
 from random import choice, randint
 from datetime import datetime
@@ -126,6 +129,23 @@ class EndpointTests(TestCase):
     
     def test_22_awards_endpoint(self):
         assert create_awards_endpoint(2).endswith("2")
+    
+    def test_23_base_team_endpoint(self):
+        assert create_standings_endpoint() == API_STANDINGS_ENDPOINT
+
+    def test_24_team_endpoint_valid_modifier_none(self):
+        random_choice = choice([x for x, y in _STANDINGS_MODIFIERS.items() if y is None])
+        random_type = _STANDINGS_MODIFIERS[random_choice]
+        assert create_standings_endpoint(modifiers={random_choice: random_type}).endswith(random_choice)
+
+    def test_25_team_endpoint_valid_modifier_str(self):
+        """Test a modifier that requires string
+        """
+        key = "season"
+        currentyear = int(datetime.now().year)
+        season = f"{currentyear-2}{currentyear-1}"
+        assert create_standings_endpoint(modifiers={key: season}).endswith(f"season={season}")
+
 
 if __name__ == '__main__':
     main()
