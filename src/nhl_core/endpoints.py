@@ -11,6 +11,24 @@ NHL_FIRST_SEASON = 1917
 # the league or the season length changes.
 MAX_GAME_NUMBER = 1312
 
+
+class Season(Enum):
+    '''The API consists of 4 types of games included in this enum. The
+    value from the enum should be zero padded and provided to the api
+    when querying for games.
+    '''
+    PRESEASON = 1
+    REGULAR = 2
+    PLAYOFFS = 3
+    ALLSTAR = 4
+
+
+class GameEndpointType(Enum):
+    LIVE = 1
+    BOXSCORE = 2
+    CONTENT = 3
+
+
 # 
 # Base Endpoints
 #
@@ -26,6 +44,7 @@ _API_TEAMSTATS_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/teams/{}/stats"
 API_DRAFT_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/draft"
 API_PROSPECTS_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/prospects"
 API_AWARDS_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/awards"
+_API_GAME_ENDPOINT = "http://statsapi.web.nhl.com/api/v1/game/{}/feed/{}"
 
 
 _TEAM_MODIFIERS = {
@@ -52,6 +71,11 @@ _SCHEDULE_MODIFIERS = {
     "date": str,
     "startDate": str,
     "endDate": str
+}
+
+_GAME_MODIFIERS = {
+    "diffPatch": None,
+    "startTimecode": str,
 }
 
 
@@ -223,30 +247,41 @@ def create_team_stats_endpoint(team_id):
     return _API_TEAMSTATS_ENDPOINT.format(team_id)
 
 
-def create_game_endpoint(year, season_type, game):
+def describe_game_endpoint():
+    """Gather information about the game endpoint.
+    """
+    return {
+        "diffPatch": "Returns the differences since the startTimeCode (must be combined with startTimeCode).",
+        "startTimecode": "Gets the difference since this time (format = yyyymmdd_hhmmss)",
+    }
+
+
+def create_game_endpoint(year, season_type, game, endpoint_type=GameEndpointType.LIVE, modifiers={}):
     '''Create an endpoint that can be used to query the api for a specific game. In
     the event that no data was found from the query the "message" field of json returned
-    will contain "Game data couldn't be found".
+    will contain "Game data couldn't be found". For a full list of modifiers run
+    describe_game_endpoint().
+
+    According to documentation found here https://github.com/dword4/nhlapi:
+    
+    The first 4 digits identify the season of the game (ie. 2017 for the 2017-2018 season). 
+    The next 2 digits give the type of game, where 01 = preseason, 02 = regular season, 
+    03 = playoffs, 04 = all-star. The final 4 digits identify the specific game number. For 
+    regular season and preseason games, this ranges from 0001 to the number of games played.
+    (1271 for seasons with 31 teams (2017 and onwards) and 1230 for seasons with 30 teams). 
+    For playoff games, the 2nd digit of the specific number gives the round of the playoffs, 
+    the 3rd digit specifies the matchup, and the 4th digit specifies the game (out of 7).
 
     :param year: Integer representation of the year in which the game was played
     :param season_type: Integer value for the season type found in the Season Enum
     :param game: Integer value for the game.
+    :param endpoint_type: Type of game data to retrieve (see GameEndpointType above).
+    :param modifiers: Dictionary of modifiers to their values. 
+
     :return: string endpoint for a game
     '''
-    return 'http://statsapi.web.nhl.com/api/v1/game/{}{}{}/feed/live'.format(
-        year, str(season_type.value).zfill(2), str(game).zfill(4)
-    )
-
-
-class Season(Enum):
-    '''The API consists of 4 types of games included in this enum. The
-    value from the enum should be zero padded and provided to the api
-    when querying for games.
-    '''
-    PRESEASON = 1
-    REGULAR = 2
-    PLAYOFFS = 3
-    ALLSTAR = 4
-
-
+    st = season_type.value if isinstance(season_type, Enum) else season_type
+    game_id = "{}{}{}".format(year, str(st).zfill(2), str(game).zfill(4))
+    endpoint = _API_GAME_ENDPOINT.format(game_id, endpoint_type.name.lower())
+    return _internal_modifier_parsing(endpoint, _GAME_MODIFIERS, modifiers)
 

@@ -1,5 +1,5 @@
 from unittest import main, TestCase
-from nhl_core.static import (
+from nhl_core.endpoints import (
     API_TEAM_ENDPOINT, 
     _TEAM_MODIFIERS,
     create_team_endpoint, 
@@ -19,6 +19,11 @@ from nhl_core.static import (
     _SCHEDULE_MODIFIERS,
     API_SCHEDULE_ENDPOINT,
     create_schedule_endpoint,
+    _API_GAME_ENDPOINT,
+    _GAME_MODIFIERS,
+    Season,
+    GameEndpointType,
+    create_game_endpoint,
 )
 from random import choice, randint
 from datetime import datetime
@@ -163,6 +168,50 @@ class EndpointTests(TestCase):
         key = "date"
         dateexample = "2018-01-09"
         assert create_schedule_endpoint(modifiers={key: dateexample}).endswith(f"{key}={dateexample}")
+
+    def test_30_game_endpoint_normal(self):
+        """ A base test will include the year, season type and game
+        """
+        year = "2022"
+        season = Season.REGULAR
+        game = 1
+
+        # 4 digits - year
+        # 2 digits - season type
+        # 4 digits - game number
+
+        assert "2022020001" in create_game_endpoint(year, season, game)
+
+    def test_31_game_endpoint_content(self):
+        """ A base test will include the year, season type and game. Add the content to the type.
+        """
+        year = "2022"
+        season = Season.REGULAR
+        game = 1
+        data = GameEndpointType.CONTENT
+
+        # 4 digits - year
+        # 2 digits - season type
+        # 4 digits - game number
+        endpoint = create_game_endpoint(year, season, game, data)
+        assert "2022020001" in endpoint
+        assert endpoint.endswith(data.name.lower())
+    
+    def test_32_game_endpoint_modifier(self):
+        """ A base test will include the year, season type and game. Add valid modifiers
+        """
+        year = "2022"
+        season = Season.REGULAR
+        game = 1
+        mods = _GAME_MODIFIERS.copy()
+        mods["startTimecode"] = "20221010_183000"
+
+        # 4 digits - year
+        # 2 digits - season type
+        # 4 digits - game number
+        endpoint = create_game_endpoint(year, season, game, modifiers=mods)
+        assert "2022020001" in endpoint
+        assert endpoint.endswith("startTimecode=20221010_183000")
 
 
 if __name__ == '__main__':
