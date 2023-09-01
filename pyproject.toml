@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nhl_core"
+authors = [
+        {name = "Brent Barbachem", email = "barbacbd@gmail.com"},
+]
+description = "A package to pull NHL historical data, and create the objects to hold the data."
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.7"
+keywords = [
+    "python",
+    "python3",
+    "sports",
+    "hockey",
+    "nhl",
+]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "License :: Freeware",
+    "Natural Language :: English",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Langauge :: Python :: 3.11",
+    "Topic :: Software Development"
+]
+dependencies = [
+    "requests",
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+tests = [
+    "pytest",
+    "coverage",
+    "pytest-cov",
+]
