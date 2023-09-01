@@ -18,6 +18,7 @@ API_TEAM_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/teams"
 API_DIVISION_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/divisions"
 API_CONFERENCE_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/conferences"
 
+API_SCHEDULE_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/schedule"
 API_STANDINGS_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/standings"
 API_STANDINGTYPES_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/standingsTypes"
 API_STATTYPES_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/statTypes"
@@ -41,6 +42,16 @@ _STANDINGS_MODIFIERS = {
     "season": str,
     "date": str,
     "record": None,
+}
+
+_SCHEDULE_MODIFIERS = {
+    "broadcasts": None,
+    "linescore": None,
+    "ticket": None,
+    "teamId": int,
+    "date": str,
+    "startDate": str,
+    "endDate": str
 }
 
 
@@ -126,6 +137,31 @@ def create_standings_endpoint(modifiers={}):
     :return: String for the endpoint
     """
     return _internal_modifier_parsing(API_STANDINGS_ENDPOINT, _STANDINGS_MODIFIERS, modifiers)
+
+
+def describe_schedule_endpoint():
+    """Gather information about the schedule endpoint.
+    """
+    return {
+        "broadcasts": "Show the broadcasts of the game.",
+        "linescore": "Linescore for completed games.",
+        "ticket": "Provides the different places to buy tickets for the upcoming games.",
+        "teamId": "Limit results to a specific team.",
+        "date": "Single defined date for the search.",
+        "startDate": "Start date of the search.",
+        "endDate": "End date of the search."
+    }
+
+def create_schedule_endpoint(modifiers={}):
+    """Create a full endpoint to retrieve NHL schedule data from the API. To retrieve a full
+    list of modifiers and their uses, please see describe_schedule_endpoint(). Note that all
+    invalid modifiers are skipped, and do Not cause an error.
+
+    :param modifiers: Dictionary of modifiers to their values. 
+
+    :return: String for the endpoint
+    """
+    return _internal_modifier_parsing(API_SCHEDULE_ENDPOINT, _SCHEDULE_MODIFIERS, modifiers)
 
 
 def create_division_endpoint(division_id=None):

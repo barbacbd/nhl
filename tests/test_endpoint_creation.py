@@ -16,6 +16,9 @@ from nhl_core.static import (
     _STANDINGS_MODIFIERS,
     API_STANDINGS_ENDPOINT,
     create_standings_endpoint,
+    _SCHEDULE_MODIFIERS,
+    API_SCHEDULE_ENDPOINT,
+    create_schedule_endpoint,
 )
 from random import choice, randint
 from datetime import datetime
@@ -130,21 +133,36 @@ class EndpointTests(TestCase):
     def test_22_awards_endpoint(self):
         assert create_awards_endpoint(2).endswith("2")
     
-    def test_23_base_team_endpoint(self):
+    def test_23_base_standings_endpoint(self):
         assert create_standings_endpoint() == API_STANDINGS_ENDPOINT
 
-    def test_24_team_endpoint_valid_modifier_none(self):
+    def test_24_standings_endpoint_valid_modifier_none(self):
         random_choice = choice([x for x, y in _STANDINGS_MODIFIERS.items() if y is None])
         random_type = _STANDINGS_MODIFIERS[random_choice]
         assert create_standings_endpoint(modifiers={random_choice: random_type}).endswith(random_choice)
 
-    def test_25_team_endpoint_valid_modifier_str(self):
+    def test_25_standings_endpoint_valid_modifier_str(self):
         """Test a modifier that requires string
         """
         key = "season"
         currentyear = int(datetime.now().year)
         season = f"{currentyear-2}{currentyear-1}"
         assert create_standings_endpoint(modifiers={key: season}).endswith(f"season={season}")
+    
+    def test_26_schedule_team_endpoint(self):
+        assert create_schedule_endpoint() == API_SCHEDULE_ENDPOINT
+
+    def test_27_team_endpoint_valid_modifier_none(self):
+        random_choice = choice([x for x, y in _SCHEDULE_MODIFIERS.items() if y is None])
+        random_type = _SCHEDULE_MODIFIERS[random_choice]
+        assert create_schedule_endpoint(modifiers={random_choice: random_type}).endswith(random_choice)
+
+    def test_28_team_endpoint_valid_modifier_str(self):
+        """Test a modifier that requires string
+        """
+        key = "date"
+        dateexample = "2018-01-09"
+        assert create_schedule_endpoint(modifiers={key: dateexample}).endswith(f"{key}={dateexample}")
 
 
 if __name__ == '__main__':
