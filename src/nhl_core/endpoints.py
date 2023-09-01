@@ -45,6 +45,8 @@ API_DRAFT_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/draft"
 API_PROSPECTS_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/prospects"
 API_AWARDS_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/awards"
 _API_GAME_ENDPOINT = "http://statsapi.web.nhl.com/api/v1/game/{}/feed/{}"
+_API_PEOPLE_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/people/{}"
+_API_PEOPLE_STATS_ENDPOINT = "https://statsapi.web.nhl.com/api/v1/people/{}/stats"
 
 
 _TEAM_MODIFIERS = {
@@ -76,6 +78,22 @@ _SCHEDULE_MODIFIERS = {
 _GAME_MODIFIERS = {
     "diffPatch": None,
     "startTimecode": str,
+}
+
+_PEOPLE_STATS_MODIFIERS = {
+    "statsSingleSeason": None,
+    "season": str,
+    "homeAndAway": None,
+    "winLoss": None,
+    "byMonth": None,
+    "byDayOfWeek": None,
+    "vsDivision": None,
+    "vsConference": None,
+    "vsTeam": None,
+    "gameLog": None,
+    "regularSeasonStatRankings": None,
+    "goalsByGameSituation": None,
+    "onPaceRegularSeason": None,
 }
 
 
@@ -186,6 +204,52 @@ def create_schedule_endpoint(modifiers={}):
     :return: String for the endpoint
     """
     return _internal_modifier_parsing(API_SCHEDULE_ENDPOINT, _SCHEDULE_MODIFIERS, modifiers)
+
+
+def describe_people_stats_endpoint():
+    """Gather information about the people (with stats) endpoint.
+    """
+    return {
+        "statsSingleSeason": "Obtains single season statistics for a player.",
+        "season": "Eight number season for the data to be applied (ex: 20212022). This is forced for all stats endpoints.",
+        "homeAndAway": "Provides a split between home and away games.",
+        "winLoss": "Provides the W/L/OT split instead of Home and Away",
+        "byMonth": "Monthly split of stats.",
+        "byDayOfWeek": "Split done by day of the week.",
+        "vsDivision": "Division stats split.",
+        "vsConference": "Conference stats split.",
+        "vsTeam": "Team stats split.",
+        "gameLog": "Provides a game log showing stats for each game of a season.",
+        "regularSeasonStatRankings": "Split of this player vs rest of the league.",
+        "goalsByGameSituation": "Shows number on when goals for a player occurred.",
+        "onPaceRegularSeason": "Projected totals (only valid for current season).",
+    }
+
+
+def create_people_endpoint(people_id, stats=False, modifiers={}):
+    """Create a full endpoint to retrieve NHL people data from the API. To retrieve a full
+    list of modifiers and their uses, please see describe_people_stats_endpoint(). Note that all
+    invalid modifiers are skipped, and do Not cause an error.
+
+    :param people_id: id of the NHL player. 
+    :param stats: Boolean value whether player stats are requested or base player data. Stats
+    include modifiers to break down information (see describe_people_stats_endpoint()).
+    :param modifiers: Dictionary of modifiers to their values. 
+
+    :return: String for the endpoint
+    """
+    if not stats:
+        return _API_PEOPLE_ENDPOINT.format(people_id)
+    
+    if modifiers:
+        if "season" not in modifiers:
+            # season may be required at this time
+            return None
+        elif "season" in modifiers and len(modifiers) != 2: 
+            # No other day can be combined
+            return None
+
+    return _internal_modifier_parsing(_API_PEOPLE_STATS_ENDPOINT.format(people_id), _PEOPLE_STATS_MODIFIERS, modifiers)
 
 
 def create_division_endpoint(division_id=None):

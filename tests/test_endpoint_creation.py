@@ -1,29 +1,33 @@
 from unittest import main, TestCase
 from nhl_core.endpoints import (
-    API_TEAM_ENDPOINT, 
+    # private - but used for testing
     _TEAM_MODIFIERS,
-    create_team_endpoint, 
-    API_DIVISION_ENDPOINT,
-    create_division_endpoint,
-    API_CONFERENCE_ENDPOINT,
-    create_conference_endpoint,
-    API_DRAFT_ENDPOINT,
-    create_draft_endpoint,
-    API_PROSPECTS_ENDPOINT,
-    create_prospects_endpoint,
-    API_AWARDS_ENDPOINT,
-    create_awards_endpoint,
     _STANDINGS_MODIFIERS,
-    API_STANDINGS_ENDPOINT,
-    create_standings_endpoint,
     _SCHEDULE_MODIFIERS,
-    API_SCHEDULE_ENDPOINT,
-    create_schedule_endpoint,
-    _API_GAME_ENDPOINT,
     _GAME_MODIFIERS,
+    # Enumerations
     Season,
     GameEndpointType,
-    create_game_endpoint,
+    # public endpoints
+	API_TEAM_ENDPOINT, 
+	API_DIVISION_ENDPOINT,
+	API_CONFERENCE_ENDPOINT,
+	API_DRAFT_ENDPOINT,
+	API_PROSPECTS_ENDPOINT,
+	API_AWARDS_ENDPOINT,
+	API_STANDINGS_ENDPOINT,
+	API_SCHEDULE_ENDPOINT,
+	# dynamic endpoint creation
+	create_team_endpoint, 
+	create_division_endpoint,
+	create_conference_endpoint,
+	create_draft_endpoint,
+	create_prospects_endpoint,
+	create_awards_endpoint,
+	create_standings_endpoint,
+	create_schedule_endpoint,
+	create_game_endpoint,
+	create_people_endpoint,
 )
 from random import choice, randint
 from datetime import datetime
@@ -212,6 +216,38 @@ class EndpointTests(TestCase):
         endpoint = create_game_endpoint(year, season, game, modifiers=mods)
         assert "2022020001" in endpoint
         assert endpoint.endswith("startTimecode=20221010_183000")
+
+    def test_33_people_endpoint_base(self):
+        people_id = 100
+        assert create_people_endpoint(people_id=people_id).endswith(str(people_id))
+    
+    def test_34_people_endpoint_stats_and_modifiers(self):
+        """required to have season and other modifier set"""
+        people_id = 100
+        modifiers = {
+            "season": "20212022",
+            "winLoss": None
+        }
+        assert create_people_endpoint(people_id=people_id, stats=True, modifiers=modifiers) is not None
+
+    def test_35_people_endpoint_stats_and_single_modifiers(self):
+        """required to have season and other modifier set"""
+        people_id = 100
+        modifiers = {
+            "season": "20212022",
+        }
+        # missing other modifier
+        assert create_people_endpoint(people_id=people_id, stats=True, modifiers=modifiers) is None
+
+    def test_36_people_endpoint_stats_and_no_season_modifiers(self):
+        """required to have season and other modifier set"""
+        people_id = 100
+        modifiers = {
+            "winLoss": None,
+            "byMonth": None
+        }
+        # missing `season` modifier
+        assert create_people_endpoint(people_id=people_id, stats=True, modifiers=modifiers) is None
 
 
 if __name__ == '__main__':
