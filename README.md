@@ -5,6 +5,30 @@
 
 The National Hockey League (NHL) was kind enough to provide all of the historical data on a free web interface. This library was created to parse the data that is retrieved from the api. After json data is retrieved it can be parsed by passing it to an `NHLData` python object. The documentation can be found [here](https://barbacbd.github.io/nhl/).
 
+# Endpoints
+
+The enpoints can be found in the package [endpoints](https://github.com/barbacbd/nhl/blob/main/src/nhl_core/endpoints.py) file. All endpoints that are public can be accessed without a required [modifier](#modifiers). For example, the endpoint `API_TEAM_ENDPOINT` does not require additional information, so the user can perform a lookup immediately. 
+
+Dynamic endpoints are the [endpoints](https://github.com/barbacbd/nhl/blob/main/src/nhl_core/endpoints.py) where modifiers are added to alter the functionality and returned information. Even though the `API_TEAM_ENDPOINT` does NOT require additional information, a user can provide more information using `_TEAM_MODIFIERS` and the function `create_team_endpoint` to create a more [descriptive url](#using-modifiers)
+
+# Modifiers
+
+Modifiers are content added to the end of a URL that will modify what is executed on the server. This information changes the returned value(s). 
+
+## Get Modifier information
+
+The user can either look up the modifier information [here](https://github.com/barbacbd/nhl/blob/main/src/nhl_core/endpoints.py), or they can access the function associated with the endpoint in which they are intending to modify. For example, the `API_TEAM_ENDPOINT` endpoint has a set of modifiers that can be accessed by `describe_team_endpoint()`. The returned value is a dictionary where the name the modifier is paired with details about the modifier.
+
+## Using Modifiers
+
+The endpoints that can be modified will have a function to create the new/modified endpoint. For example, `create_team_endpoint` will modify the `API_TEAM_ENDPOINT` when provided with a `team_id` and a dictionary of modifiers. 
+
+```python
+endpoint = create_team_endpoint(team_id="1", modifiers={"roster": "", "season": "20212022"})
+```
+
+The above example can be used to lookup the roster for the team with id = `1` during the 2021-2022 season. 
+
 # Example 
 
 In the following example, the data for a single team is retrieved.
